@@ -1,0 +1,178 @@
+<html>
+	<head>
+		
+        <meta name="view" content="width=device-width, initial-scale=1.0" />
+		<script
+			src="https://unpkg.com/react@16/umd/react.development.js"
+			crossorigin
+		></script>
+		<script
+			src="https://unpkg.com/react-dom@16/umd/react-dom.development.js"
+			crossorigin
+		></script>
+		<script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.js"></script>
+		<script src="https://unpkg.com/react-router-dom/umd/react-router-dom.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.js"></script>
+		<!--<script type="text/babel" src="app.js" defer></script>-->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.2/axios.min.js" defer></script>
+	    <style>
+            nav{
+         display:flex;
+         justify-content:space-around;
+            }
+            .selected{
+                background-color: tomato;
+            }
+		</style>
+        
+		
+	</head>
+	<body>
+        <div id="root"></div>
+        <script type='text/babel'>
+          
+           const {render}=ReactDOM;
+
+
+
+const{HashRouter,Switch,Link,Route,Redirect}=ReactRouterDOM;
+const root=document.querySelector('#root');
+
+const Foos=({foos,match})=>{
+    console.log(match)
+    return(
+<div>
+	
+	<ul>{
+        foos.map((foo,idx)=><li key={idx}>
+            <Link to={`/foos/${foo.id}`} className={match.params.id&&match.params.id*1===foo.id?'selected':''}>
+            {foo.name}
+            </Link>
+            </li>)
+    }</ul>
+    
+	<Route path='/foos/:id' render={({match})=> <Foo foos={foos} match={match}/>}/>
+    </div>
+    )
+}
+
+    class Foo extends React.Component{
+        constructor(){
+            super();
+                this.state={
+                    foo:{},
+
+
+                }
+            
+        }
+        componentDidUpdate(prevProps){
+            if(prevProps.match.params.id !==this.props.match.params.id){
+                
+            setTimeout(()=>{
+        const id =this.props.match.params.id*1;
+        const foo={
+         detail:`This is shows the id:${id}`,
+         id,
+        }
+        this.setState({foo})
+        //console.log(match)
+        if(!foo.id){
+            return null;
+             }
+           },500)
+         }
+        }
+        componentDidMount(){
+            setTimeout(()=>{
+        const id =this.props.match.params.id*1;
+        const foo={
+         detail:`This is shows the id:${id}`,
+         id,
+        }
+        this.setState({foo})
+        //console.log(match)
+        if(!foo.id){
+            return null;
+        }
+    },500)
+    }
+        render(){
+            const {foo}=this.state;
+            if(!foo.id){
+            return null;
+        }
+    return(
+        
+        
+    <h1>{foo.detail}</h1>
+    )
+    }
+}
+    
+    const Bars=({bars})=><div>
+	
+	<ul>{
+		bars.map((bar,idx)=><li key={idx}>{bar}</li>)
+	}</ul>
+	
+	</div>
+
+
+const Nav=({path,foos,bars})=>{
+	
+	
+	return(<nav>
+			
+            <Link to='/foos' className={path==='/foos'?'selected':''}>Foos ({foos.length})</Link>
+            <Link to='/bars' className={path==='/bars'?'selected':''}>Bars ({bars.length})</Link>
+			</nav>)
+}
+class App extends React.Component{
+	constructor(){
+		super();
+		this.state={
+            foos:[],
+            bars:[],
+        }
+		}
+	
+	componentDidMount(){
+		setTimeout(()=>{
+        const foos=[{id:1,name:'foo1'},
+                    {id:2,name:'foo2'},
+                    {id:3,name:'foo3'}  ];
+                    const bars=['bar1','bar2','bar3','bar4'];
+	this.setState({foos,bars})
+		},1000)
+    }
+
+	
+	render(){
+		const {foos,bars}=this.state;
+		
+	return(
+	<HashRouter>
+		
+	       <Route render={(props)=> <Nav foos={foos} bars={bars} path= {props.location.pathname}/>}/>
+			<Switch>
+			
+            <Route  path='/foos/:id?' render={({match})=> <Foos foos={foos} match={match}/>}/>
+                
+            
+             <Route path='/bars' render={()=> <Bars bars={bars}/>}/>
+			<Redirect to='/foos'/>
+			</Switch>
+
+		     
+		</HashRouter>
+	)
+}
+}
+
+render(<App />,root);
+
+        </script>
+	</body>
+</html>
